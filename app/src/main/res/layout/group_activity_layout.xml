@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.MainActivity">
+    tools:context=".activities.GroupActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -19,23 +19,27 @@
             app:popupTheme="@style/Theme.TechnoMobile.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
-
-    <ListView
-        android:id="@+id/group_list"
-        android:layout_marginTop="48dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:divider="#808080"
-        android:dividerHeight="1dp">
-
-    </ListView>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
+    <TextView
+        android:id="@+id/textview_group_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        android:layout_marginTop="64dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="94dp"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/btn_membres"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:text="Les membres"/>
+        <Button
+            android:id="@+id/btn_depenses"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:text="Les dépenses"/>
+
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

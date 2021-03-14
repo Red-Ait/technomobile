@@ -7,6 +7,9 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="hello_group">Groupe : %s</string>
+    <string name="mes_groupes">Mes Groupes</string>
+    <string name="title_activity_group_">Group_Activity</string>
+    <string name="title_activity_member">Group_Member</string>
+
 </resources>
