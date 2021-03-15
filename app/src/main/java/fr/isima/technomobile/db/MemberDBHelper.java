@@ -10,64 +10,67 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.isima.technomobile.db.entities.Contact;
 import fr.isima.technomobile.db.entities.Group;
 
-public class GroupDBHelper extends SQLiteOpenHelper {
+public class MemberDBHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "BD_HELPER";
 
-    public GroupDBHelper(Context context) {
+    public MemberDBHelper(Context context) {
         super(context, GroupSchema.DB_NAME, null, GroupSchema.DB_VERSION);
     }
+
     @ Override
     public void onCreate(SQLiteDatabase db) {
-        String createTable = "CREATE TABLE group_table (id INTEGER PRIMARY KEY AUTOINCREMENT , title TEXT NOT NULL)";
-        String createTable2 = "CREATE TABLE " + GroupSchema.Member.TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT , phone_no TEXT NOT NULL, contact_name TEXT NOT NULL, group_id INTEGER NOT NULL)";
+        String createTable = "CREATE TABLE " + GroupSchema.Member.TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT , phone_no TEXT NOT NULL, contact_name TEXT NOT NULL, group_id INTEGER NOT NULL)";
         db.execSQL(createTable);
-        db.execSQL(createTable2);
     }
+
     @ Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String dropTable = "DROP TABLE IF EXISTS group_table";
+        String dropTable = "DROP TABLE IF EXISTS " + GroupSchema.Member.TABLE_NAME;
         db.execSQL(dropTable);
         onCreate(db);
     }
 
-    public List<Group> getAllGroups() {
-        List<Group> groups = new ArrayList<>();
-        String TASKS_SELECT_QUERY = String.format("SELECT * FROM %s ", GroupSchema.Group.TABLE_NAME);
+    public List<Contact> getAllGroupMember(int groupId) {
+        List<Contact> contacts = new ArrayList<>();
+        String TASKS_SELECT_QUERY = String.format("SELECT * FROM %s WHERE %s = %s",
+                GroupSchema.Member.TABLE_NAME, GroupSchema.Member.COL_GROUP_ID, groupId);
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(TASKS_SELECT_QUERY, null);
         try {
             if (cursor.moveToFirst()) {
                 do {
-                    Group group = new Group();
-                    group.setTitle(cursor.getString(cursor.getColumnIndex(GroupSchema.Group.COL_TITLE)));
-                    group.setId(cursor.getInt(cursor.getColumnIndex(GroupSchema.Group.COL_ID)));
-                    groups.add(group);
+                    Contact contact = new Contact();
+                    contact.setNumber(cursor.getString(cursor.getColumnIndex(GroupSchema.Member.COL_PHONE_NO)));
+                    contact.setName(cursor.getString(cursor.getColumnIndex(GroupSchema.Member.COL_CONTACT_NAME)));
+                    contacts.add(contact);
                 } while(cursor.moveToNext());
             }
         } catch (Exception e) {
-            Log.d(TAG, "Error while trying to get groups from database");
+            Log.d(TAG, "Error while trying to get members from database");
             return new ArrayList<>();
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
         }
-        return groups;
+        return contacts;
     }
 
-    public  void addGroup(String title) {
+    public  void addContactToGroupGroup(Contact contact, int groupId) {
         SQLiteDatabase db = getWritableDatabase();
         db.beginTransaction();
         try {
-
             ContentValues values = new ContentValues();
-            values.put(GroupSchema.Group.COL_TITLE, title);
-            db.insertOrThrow(GroupSchema.Group.TABLE_NAME, null, values);
+            values.put(GroupSchema.Member.COL_PHONE_NO, contact.getNumber());
+            values.put(GroupSchema.Member.COL_CONTACT_NAME, contact.getName());
+            values.put(GroupSchema.Member.COL_GROUP_ID, groupId);
+            db.insertOrThrow(GroupSchema.Member.TABLE_NAME, null, values);
             db.setTransactionSuccessful();
-            Log.d(TAG, "Group Added");
+            Log.d(TAG, "Member Added : " + contact.getName() + " => " + groupId);
         } catch (Exception e) {
             Log.d(TAG, "Error while trying to add post to database");
         } finally {
@@ -75,24 +78,31 @@ public class GroupDBHelper extends SQLiteOpenHelper {
         }
     }
 
-/*    public  void deleteTask(String title) {
+    public void deleteContactFromGroup(Contact contact, int group_id) {
         SQLiteDatabase db = getWritableDatabase();
         db.beginTransaction();
         try {
 
             ContentValues values = new ContentValues();
-            values.put(TodoEntrySchema.TodoEntry.COL_TODOENTRY, title);
+            values.put(GroupSchema.Member.COL_GROUP_ID, group_id);
+            values.put(GroupSchema.Member.COL_PHONE_NO, contact.getNumber());
 
-            db.delete(TodoEntrySchema.TodoEntry.TABLE, TodoEntrySchema.TodoEntry.COL_TODOENTRY + "=?", new String[]{title}) ;
+            db.delete(GroupSchema.Member.TABLE_NAME,
+                    GroupSchema.Member.COL_GROUP_ID + "=? and " + GroupSchema.Member.COL_PHONE_NO + " =?",
+                    new String[]{String.valueOf(group_id), contact.getNumber()}) ;
             db.setTransactionSuccessful();
+            Log.d(TAG, "delete");
+            Log.d(TAG, "*********************************");
         } catch (Exception e) {
-//            Log.d(TAG, "Error while trying to add post to database");
+            Log.d(TAG, "*********************************");
+            Log.d(TAG, "Error while trying to delete");
+            Log.d(TAG, e.getMessage());
         } finally {
             db.endTransaction();
         }
     }
 
-    public  void deleteAllTasks() {
+    /*    public  void deleteAllTasks() {
         SQLiteDatabase db = getWritableDatabase();
         db.beginTransaction();
         try {
@@ -123,4 +133,5 @@ public class GroupDBHelper extends SQLiteOpenHelper {
             db.endTransaction();
         }
     }
-*/}
+*/
+}
