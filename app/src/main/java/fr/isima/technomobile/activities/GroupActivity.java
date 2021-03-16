@@ -40,5 +40,13 @@ public class GroupActivity extends AppCompatActivity {
             startActivity(intent);
 
         });
+
+        Button btnDépenses = (Button) findViewById(R.id.btn_depenses);
+        btnDépenses.setOnClickListener(v -> {
+            Intent intent = new Intent(GroupActivity.this, DépensesActivity.class).putExtra("group", groupObjInToClass);
+            startActivity(intent);
+
+        });
+
     }
 }

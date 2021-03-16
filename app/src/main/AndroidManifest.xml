@@ -11,6 +11,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TechnoMobile">
         <activity
+            android:name=".activities.DépensesActivity"
+            android:label="@string/title_activity_depenses"
+            android:theme="@style/Theme.TechnoMobile.NoActionBar" />
+        <activity
             android:name=".activities.MembersActivity"
             android:label="@string/title_activity_member"
             android:theme="@style/Theme.TechnoMobile.NoActionBar" />

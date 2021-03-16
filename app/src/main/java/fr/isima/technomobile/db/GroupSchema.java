@@ -2,6 +2,8 @@ package fr.isima.technomobile.db;
 
 import android.provider.BaseColumns;
 
+import java.util.Date;
+
 public class GroupSchema {
 
     public static final String DB_NAME = "fr.isima.technomobile.db";
@@ -19,6 +21,12 @@ public class GroupSchema {
         public static final String COL_CONTACT_NAME = "contact_name";
         public static final String COL_GROUP_ID = "group_id";
         public static final String COL_ID = "id";
+    }
+
+    public  class Dépenses implements BaseColumns {
+        public static final String TABLE_NAME = "depenses_table";
+        public static final String COL_TITLE = "title";
+        public static final String COL_DATE = "date";
     }
 
 }
