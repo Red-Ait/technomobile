@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -23,9 +24,11 @@ import fr.isima.technomobile.db.entities.DetailDepense;
 import fr.isima.technomobile.db.entities.Emission;
 
 public class DetailDepenseActivity extends AppCompatActivity {
-
+    double depenseSum = 0;
+    public static WeakReference<DetailDepenseActivity> weakActivity;
     private static final String TAG = "LOG_INF";
     private Depenses selectedDepense;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,8 +42,19 @@ public class DetailDepenseActivity extends AppCompatActivity {
         TextView date = (TextView) findViewById(R.id.depense_date);
         date.setText(selectedDepense.getDate());
         updateDetailDepenseList();
+        weakActivity = new WeakReference<>(DetailDepenseActivity.this);
+    }
+    public static DetailDepenseActivity getInstanceActivity() {
+        return weakActivity.get();
     }
 
+    public void updateSumValue(double d) {
+        depenseSum += d;
+        NumberFormat formatter = new DecimalFormat("#0.00");
+        TextView depSum = findViewById(R.id.depense_sum);
+        depSum.setText(formatter.format(depenseSum) + " EUR");
+
+    }
     public void updateDetailDepenseList() {
         MemberDBHelper memberDBHelper = new MemberDBHelper(this);
         List<Contact> contacts = memberDBHelper.getAllGroupMember(selectedDepense.getGroupId());
@@ -48,12 +62,18 @@ public class DetailDepenseActivity extends AppCompatActivity {
         ListView listView = (ListView) findViewById(R.id.detail_depense_list);
 
         ArrayList<DetailDepense> array = new ArrayList<>();
+        depenseSum = 0.0;
         for(Contact c : contacts) {
             array.add(new DetailDepense(c, selectedDepense.getId()));
             EmissionBDHelper emissionBDHelper = new EmissionBDHelper(this);
             List<Emission> emissions = emissionBDHelper.getAllEmission(selectedDepense.getId(), c.getNumber());
-
+            for(Emission e : emissions) {
+                depenseSum += e.getValue();
+            }
         }
+        NumberFormat formatter = new DecimalFormat("#0.00");
+        TextView depSum = findViewById(R.id.depense_sum);
+        depSum.setText(formatter.format(depenseSum) + " EUR");
 
         DetailDepenseListAdapter adapter = new DetailDepenseListAdapter(this, array);
         listView.setAdapter(adapter);

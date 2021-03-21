@@ -10,6 +10,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.isima.technomobile.activities.DetailDepenseActivity;
 import fr.isima.technomobile.db.entities.Contact;
 import fr.isima.technomobile.db.entities.Depenses;
 import fr.isima.technomobile.db.entities.Emission;
@@ -47,6 +48,7 @@ public class EmissionBDHelper extends SQLiteOpenHelper {
             db.insertOrThrow(GroupSchema.Emission.TABLE_NAME, null, values);
             db.setTransactionSuccessful();
             Log.d(TAG, "Mission Added");
+            DetailDepenseActivity.getInstanceActivity().updateSumValue(emission.getValue());
 
             // TODO call add dep details
         } catch (Exception e) {
