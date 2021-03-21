@@ -31,6 +31,7 @@ import fr.isima.technomobile.R;
 import fr.isima.technomobile.activities.DepensesActivity;
 import fr.isima.technomobile.db.DepensesDBHelper;
 import fr.isima.technomobile.db.EmissionBDHelper;
+import fr.isima.technomobile.db.PartitionDBHelper;
 import fr.isima.technomobile.db.entities.Contact;
 import fr.isima.technomobile.db.entities.Depenses;
 import fr.isima.technomobile.db.entities.DetailDepense;
@@ -64,7 +65,25 @@ public class DetailDepenseListAdapter extends ArrayAdapter<DetailDepense> {
 
         initListEmission(convertView, detailDepense.getMember(), detailDepense.getDepenseId());
 
+        updatePart(convertView, detailDepense);
+
+        LinearLayout editPart = convertView.findViewById(R.id.edit_part);
+        View finalConvertView = convertView;
+        editPart.setOnClickListener(v -> {
+            showEditPartitionForm(context, detailDepense.getMember().getNumber(),
+                    new PartitionDBHelper(context).getPartition(detailDepense.getMember().getNumber(),
+                            detailDepense.getDepenseId()), finalConvertView, detailDepense);
+        });
+
         return convertView;
+    }
+    void updatePart(View convertView, DetailDepense detailDepense) {
+        TextView partition = convertView.findViewById(R.id.detail_depense_membre_part);
+        PartitionDBHelper partitionDBHelper = new PartitionDBHelper(context);
+        double val = partitionDBHelper.getPartition(detailDepense.getMember().getNumber(), detailDepense.getDepenseId());
+        NumberFormat formatter = new DecimalFormat("#0.00");
+        partition.setText(formatter.format(val) + " %");
+
     }
 
     private void initListEmission(View view, Contact contact, int depenseId) {
@@ -89,7 +108,6 @@ public class DetailDepenseListAdapter extends ArrayAdapter<DetailDepense> {
 
         EmissionListAdapter adapter = new EmissionListAdapter(getContext(), new ArrayList<>(emissions));
         listView.setAdapter(adapter);
-        Log.i(TAG, "Dep det adap init lis");
 
     }
 
@@ -133,6 +151,39 @@ public class DetailDepenseListAdapter extends ArrayAdapter<DetailDepense> {
                         emissionBDHelper.addEmissionToDepense(emission, depenseId);
                         Log.i(TAG, "Det DET  Adapt add dep");
 
+                    }
+                })
+                .setNegativeButton ("Annuler", null )
+                .create();
+        dialog.show() ;
+    }
+
+
+    public void showEditPartitionForm(Context context, String phone, double part, View convertView, DetailDepense detailDepense) {
+
+        LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+        EditText val = new EditText(context);
+        val.setInputType(InputType.TYPE_CLASS_NUMBER);
+        val.setText(String.valueOf(part));
+
+        TextView text = new TextView(context);
+        text.setText("Pourcentage");
+        linearLayout.addView(text);
+        linearLayout.addView(val);
+
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setTitle("Modifier le pourcentage")
+                .setView(linearLayout)
+                .setPositiveButton("Modifier", new DialogInterface.OnClickListener () {
+                    @ Override
+                    public void onClick ( DialogInterface dialog , int which ) {
+                        PartitionDBHelper partitionDBHelper = new PartitionDBHelper(context);
+                        partitionDBHelper.updatePartition(phone, detailDepense.getDepenseId(), Double.valueOf(String.valueOf(val.getText())));
+                        updatePart(convertView, detailDepense);
                     }
                 })
                 .setNegativeButton ("Annuler", null )

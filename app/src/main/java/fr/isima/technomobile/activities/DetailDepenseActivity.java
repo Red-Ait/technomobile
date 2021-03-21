@@ -1,7 +1,9 @@
 package fr.isima.technomobile.activities;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
@@ -80,4 +82,22 @@ public class DetailDepenseActivity extends AppCompatActivity {
 
         Log.i(TAG, "Dep det Act updt");
     }
+    public void showDeleteEmissionConfirmation(Emission emission) {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Confirmation")
+                .setMessage("Voulez-vous supprimer " + emission.getDesignation() + " de dépense :" + selectedDepense.getTitle() + " ?")
+                .setPositiveButton("Oui", new DialogInterface.OnClickListener () {
+                    @ Override
+                    public void onClick ( DialogInterface dialog , int which ) {
+                        EmissionBDHelper emissionBDHelper = new EmissionBDHelper(DetailDepenseActivity.this);
+                        emissionBDHelper.deleteEmission(emission);
+                        updateSumValue(emission.getValue() * -1);
+                        updateDetailDepenseList();
+                    }
+                })
+                .setNegativeButton ("Non", null )
+                .create();
+        dialog.show() ;
+    }
+
 }

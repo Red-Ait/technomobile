@@ -12,6 +12,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import fr.isima.technomobile.R;
+import fr.isima.technomobile.activities.DetailDepenseActivity;
 import fr.isima.technomobile.db.entities.DetailDepense;
 import fr.isima.technomobile.db.entities.Emission;
 
@@ -34,7 +35,11 @@ public class EmissionListAdapter extends ArrayAdapter<Emission> {
         TextView des = convertView.findViewById(R.id.emission_designation);
         des.setText(emission.getDesignation());
         TextView val = convertView.findViewById(R.id.emission_value);
-        val.setText(formatter.format(emission.getValue()));
+        val.setText(formatter.format(emission.getValue()) + " EUR");
+        convertView.setOnLongClickListener(v -> {
+            DetailDepenseActivity.getInstanceActivity().showDeleteEmissionConfirmation(emission);
+            return true;
+        });
 
         return convertView;
     }

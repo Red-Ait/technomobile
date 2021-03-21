@@ -71,6 +71,7 @@ public class EmissionBDHelper extends SQLiteOpenHelper {
                     Emission emission = new Emission();
                     emission.setMember(memberDBHelper.getMemberByPhoneNo(phoneNo));
                     emission.setValue(Double.parseDouble(cursor.getString(cursor.getColumnIndex(GroupSchema.Emission.COL_VALUE))));
+                    emission.setId(Integer.parseInt(cursor.getString(cursor.getColumnIndex(GroupSchema.Emission.COL_ID))));
                     emission.setDesignation(cursor.getString(cursor.getColumnIndex(GroupSchema.Emission.COL_DESIGNATION)));
                     emissions.add(emission);
                 } while(cursor.moveToNext());
@@ -84,6 +85,26 @@ public class EmissionBDHelper extends SQLiteOpenHelper {
             }
         }
         return emissions;
+    }
+
+    public void deleteEmission(Emission emission) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        try {
+
+            db.delete(GroupSchema.Emission.TABLE_NAME,
+                    GroupSchema.Emission.COL_ID + "=? ",
+                    new String[]{String.valueOf(emission.getId())}) ;
+            db.setTransactionSuccessful();
+            Log.d(TAG, "delete");
+            Log.d(TAG, "*********************************");
+        } catch (Exception e) {
+            Log.d(TAG, "*********************************");
+            Log.d(TAG, "Error while trying to delete");
+            Log.d(TAG, e.getMessage());
+        } finally {
+            db.endTransaction();
+        }
     }
 
 

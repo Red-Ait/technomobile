@@ -40,4 +40,12 @@ public class GroupSchema {
         public static final String COL_DEPENSE_ID = "id_depense";
     }
 
+    public  class Partition implements BaseColumns {
+        public static final String TABLE_NAME = "partition_table";
+        public static final String COL_ID = "id";
+        public static final String COL_CONTACT_PHONE = "contact_phone";
+        public static final String COL_VALUE = "value";
+        public static final String COL_DEPENSE_ID = "id_depense";
+    }
+
 }
