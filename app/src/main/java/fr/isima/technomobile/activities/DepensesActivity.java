@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,9 +29,9 @@ import fr.isima.technomobile.db.DepensesDBHelper;
 import fr.isima.technomobile.db.entities.Depenses;
 import fr.isima.technomobile.db.entities.Group;
 
-public class DépensesActivity extends AppCompatActivity {
+public class DepensesActivity extends AppCompatActivity {
 
-    public static WeakReference<MembersActivity> weakActivity;
+    public static WeakReference<DepensesActivity> weakActivity;
     private static final String TAG = "ADAPTER";
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 400;
     Group selectedGroup = null;
@@ -54,15 +55,22 @@ public class DépensesActivity extends AppCompatActivity {
                 showAddDepensesForm();
             }
         });
+        updateDépensesList();
+        weakActivity = new WeakReference<DepensesActivity>(DepensesActivity.this);
+
     }
 
+    public static DepensesActivity getInstanceActivity() {
+        return weakActivity.get();
+    }
 
     public void updateDépensesList() {
+
         DepensesDBHelper dépensesDBHelper = new DepensesDBHelper(this);
 
         ListView listView = (ListView) findViewById(R.id.depenses_list);
         ArrayList<Depenses> array = new ArrayList<>();
-        array.addAll(dépensesDBHelper.getAllDépensess());
+        array.addAll(dépensesDBHelper.getAllDépensess(selectedGroup.getId()));
         DepensesListAdapter adapter = new DepensesListAdapter(this, array);
         listView.setAdapter(adapter);
     }
@@ -79,20 +87,20 @@ public class DépensesActivity extends AppCompatActivity {
         scrollView.addView(linearLayout);
         EditText editText = new EditText(this);
         DatePicker datePicker = new DatePicker( this);
-        EditText text = new EditText(this);
-        text.setText("Dépenses");
+        TextView text = new TextView(this);
+        text.setText("Nom de dépense");
         linearLayout.addView(text);
         linearLayout.addView(editText);
-        EditText text2 = new EditText(this);
+        TextView text2 = new TextView(this);
         text2.setText("Date");
         linearLayout.addView(text2);
         linearLayout.addView(datePicker);
 
 
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("Add expenses")
+                .setTitle("Ajouter dépense")
                 .setView(scrollView)
-                .setPositiveButton("Add", new DialogInterface.OnClickListener () {
+                .setPositiveButton("Ajouter", new DialogInterface.OnClickListener () {
                     @ Override
                     public void onClick ( DialogInterface dialog , int which ) {
                        // Log.d("staart","ok");
@@ -100,14 +108,14 @@ public class DépensesActivity extends AppCompatActivity {
                         SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
                         String date = dateformat.format(new Date( (datePicker.getYear())-1900 , datePicker.getMonth(),datePicker.getDayOfMonth()));
                         Log.d("date", date);
-                        DepensesDBHelper dépensesDBHelper = new DepensesDBHelper(DépensesActivity.this.getApplicationContext());
-                        dépensesDBHelper.addDépenses(title,date);
+                        DepensesDBHelper dépensesDBHelper = new DepensesDBHelper(DepensesActivity.this.getApplicationContext());
+                        dépensesDBHelper.addDépenses(title,date, selectedGroup.getId());
                         updateDépensesList();
                        // Log.d("end","done");
 
                     }
                 })
-                .setNegativeButton ("Cancel", null )
+                .setNegativeButton ("Annuler", null )
                 .create();
         dialog.show() ;
     }

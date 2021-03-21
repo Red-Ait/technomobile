@@ -3,14 +3,9 @@ package fr.isima.technomobile.activities;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -41,9 +36,9 @@ public class GroupActivity extends AppCompatActivity {
 
         });
 
-        Button btnDépenses = (Button) findViewById(R.id.btn_depenses);
-        btnDépenses.setOnClickListener(v -> {
-            Intent intent = new Intent(GroupActivity.this, DépensesActivity.class).putExtra("group", groupObjInToClass);
+        Button btnDepenses = (Button) findViewById(R.id.btn_depenses);
+        btnDepenses.setOnClickListener(v -> {
+            Intent intent = new Intent(GroupActivity.this, DepensesActivity.class).putExtra("group", groupObjInToClass);
             startActivity(intent);
 
         });

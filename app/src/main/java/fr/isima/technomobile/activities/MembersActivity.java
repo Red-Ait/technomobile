@@ -141,9 +141,9 @@ public class MembersActivity extends AppCompatActivity {
         }
 
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("Ajouter les contactes")
+                .setTitle("Ajouter les contacts")
                 .setView(scrollView)
-                .setPositiveButton("Add", new DialogInterface.OnClickListener () {
+                .setPositiveButton("Ajouter", new DialogInterface.OnClickListener () {
                     @ Override
                     public void onClick ( DialogInterface dialog , int which ) {
                         MemberDBHelper memberDBHelper = new MemberDBHelper(MembersActivity.this.getApplicationContext());
@@ -153,7 +153,7 @@ public class MembersActivity extends AppCompatActivity {
                         updateMembersList();
                     }
                 })
-                .setNegativeButton ("Cancel", null )
+                .setNegativeButton ("Annuler", null )
                 .create();
         dialog.show() ;
     }
@@ -175,7 +175,7 @@ public class MembersActivity extends AppCompatActivity {
                 // Permission is granted
                 askForContacts();
             } else {
-                Toast.makeText(this, "Until you grant the permission, we canot display the names", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Nous avons besoin de votre permission pour afficher les contacts", Toast.LENGTH_SHORT).show();
             }
         }
     }

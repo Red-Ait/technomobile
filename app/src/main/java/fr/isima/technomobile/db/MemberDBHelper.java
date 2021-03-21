@@ -1,10 +1,13 @@
 package fr.isima.technomobile.db;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -16,9 +19,11 @@ import fr.isima.technomobile.db.entities.Group;
 public class MemberDBHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "BD_HELPER";
+    private Context context;
 
     public MemberDBHelper(Context context) {
         super(context, GroupSchema.DB_NAME, null, GroupSchema.DB_VERSION);
+        this.context = context;
     }
 
     @ Override
@@ -34,6 +39,36 @@ public class MemberDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public Contact getMemberByPhoneNo(String phoneNo) {
+        Contact contact = null;
+
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNo));
+
+        List<Contact> contacts = new ArrayList<>();
+        ContentResolver cr = context.getContentResolver();
+        Cursor cursor = cr.query(uri,
+                new String[] {ContactsContract.PhoneLookup.DISPLAY_NAME, ContactsContract.PhoneLookup._ID},
+                null,
+                null,
+                null);
+
+        String contactid26 = null;
+        if(cursor!=null) {
+            while(cursor.moveToNext()){
+                contact = new Contact();
+                contact.setName(cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.PhoneLookup.DISPLAY_NAME)));
+                contact.setNumber(phoneNo);
+                contactid26 = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.PhoneLookup._ID));
+            }
+            cursor.close();
+            if(contactid26 == null) {
+                contact.setName(phoneNo);
+                contact.setNumber(phoneNo);
+            }
+        }
+        return contact;
+
+    }
     public List<Contact> getAllGroupMember(int groupId) {
         List<Contact> contacts = new ArrayList<>();
         String TASKS_SELECT_QUERY = String.format("SELECT * FROM %s WHERE %s = %s",
@@ -102,36 +137,4 @@ public class MemberDBHelper extends SQLiteOpenHelper {
         }
     }
 
-    /*    public  void deleteAllTasks() {
-        SQLiteDatabase db = getWritableDatabase();
-        db.beginTransaction();
-        try {
-
-
-            db.delete(TodoEntrySchema.TodoEntry.TABLE, null, null) ;
-            db.setTransactionSuccessful();
-        } catch (Exception e) {
-//            Log.d(TAG, "Error while trying to add post to database");
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    public  void updateTask(String newtitle, String oldtitle) {
-        SQLiteDatabase db = getWritableDatabase();
-        db.beginTransaction();
-        try {
-
-            ContentValues values = new ContentValues();
-            values.put(TodoEntrySchema.TodoEntry.COL_TODOENTRY, newtitle);
-
-            db.update(TodoEntrySchema.TodoEntry.TABLE, values, "title = ?", new String[]{oldtitle});
-            db.setTransactionSuccessful();
-        } catch (Exception e) {
-//            Log.d(TAG, "Error while trying to add post to database");
-        } finally {
-            db.endTransaction();
-        }
-    }
-*/
 }

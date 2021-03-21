@@ -83,10 +83,10 @@ public class MainActivity extends AppCompatActivity {
     public void showAddGroupForm() {
         final EditText editText = new EditText( this);
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("Add New Group")
-                .setMessage("Group Name")
+                .setTitle("Création de groupe :")
+                .setMessage("Nom de groupe")
                 .setView(editText)
-                .setPositiveButton("Add", new DialogInterface.OnClickListener () {
+                .setPositiveButton("Ajouter", new DialogInterface.OnClickListener () {
                     @ Override
                     public void onClick ( DialogInterface dialog , int which ) {
                         String groupName = String.valueOf(editText.getText());
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                         updateGroupList();
                     }
                 })
-                .setNegativeButton ("Cancel", null )
+                .setNegativeButton ("Annuler", null )
                 .create();
         dialog.show() ;
     }

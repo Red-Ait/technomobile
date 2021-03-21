@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.nfc.Tag;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -15,37 +14,40 @@ import fr.isima.technomobile.db.entities.Depenses;
 
 public class DepensesDBHelper extends SQLiteOpenHelper {
 
+    private Context context;
     private static final String TAG = "BD_HELPER";
 
     public DepensesDBHelper(Context context) {
         super(context, GroupSchema.DB_NAME, null, GroupSchema.DB_VERSION);
+        this.context = context;
     }
     @ Override
     public void onCreate(SQLiteDatabase db) {
-        String createTable = "CREATE TABLE " + GroupSchema.Dépenses.TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT , title TEXT NOT NULL , date DATE NOT NULL )";
+        String createTable = "CREATE TABLE " + GroupSchema.Depense.TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT , title TEXT NOT NULL , date DATE NOT NULL , group_id INTEGER NOT NULL)";
         db.execSQL(createTable);
     }
     @ Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String dropTable = "DROP TABLE IF EXISTS " + GroupSchema.Dépenses.TABLE_NAME; ;
+        String dropTable = "DROP TABLE IF EXISTS " + GroupSchema.Depense.TABLE_NAME; ;
         db.execSQL(dropTable);
         onCreate(db);
     }
 
 
 
-    public List<Depenses> getAllDépensess() {
+    public List<Depenses> getAllDépensess(int groupId) {
         List<Depenses> dépensess = new ArrayList<>();
-        String TASKS_SELECT_QUERY = String.format("SELECT * FROM %s ", GroupSchema.Dépenses.TABLE_NAME);
+        String TASKS_SELECT_QUERY = String.format("SELECT * FROM %s WHERE %s = %s", GroupSchema.Depense.TABLE_NAME, GroupSchema.Depense.COL_GROUP_ID, groupId);
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(TASKS_SELECT_QUERY, null);
         try {
             if (cursor.moveToFirst()) {
                 do {
                     Depenses dépenses = new Depenses();
-                    dépenses.setTitle(cursor.getString(cursor.getColumnIndex(GroupSchema.Dépenses.COL_TITLE)));
-                   // dépenses.setId(cursor.getInt(cursor.getColumnIndex(GroupSchema.Dépenses.COL_ID)));
-                    dépenses.setDate(cursor.getString(cursor.getColumnIndex(GroupSchema.Dépenses.COL_DATE)));
+                    dépenses.setTitle(cursor.getString(cursor.getColumnIndex(GroupSchema.Depense.COL_TITLE)));
+                    dépenses.setId(cursor.getInt(cursor.getColumnIndex(GroupSchema.Depense.COL_ID)));
+                    dépenses.setDate(cursor.getString(cursor.getColumnIndex(GroupSchema.Depense.COL_DATE)));
+                    dépenses.setGroupId(groupId);
                     dépensess.add(dépenses);
                     Log.d("end","done");
                 } while(cursor.moveToNext());
@@ -61,17 +63,20 @@ public class DepensesDBHelper extends SQLiteOpenHelper {
         return dépensess;
     }
 
-    public  void addDépenses(String title,  String date) {
+    public  void addDépenses(String title,  String date, int groupId) {
         SQLiteDatabase db = getWritableDatabase();
         db.beginTransaction();
         try {
-
             ContentValues values = new ContentValues();
-            values.put(GroupSchema.Dépenses.COL_TITLE, title);
-            values.put(GroupSchema.Dépenses.COL_DATE, date);
-            db.insertOrThrow(GroupSchema.Dépenses.TABLE_NAME, null, values);
+            values.put(GroupSchema.Depense.COL_TITLE, title);
+            values.put(GroupSchema.Depense.COL_DATE, date);
+            values.put(GroupSchema.Depense.COL_GROUP_ID, groupId);
+            db.insertOrThrow(GroupSchema.Depense.TABLE_NAME, null, values);
             db.setTransactionSuccessful();
             Log.d(TAG, "Dépenses Added");
+
+            // TODO call add dep details
+
         } catch (Exception e) {
             Log.d(TAG, "Error while trying to add post to database");
         } finally {
@@ -79,52 +84,4 @@ public class DepensesDBHelper extends SQLiteOpenHelper {
         }
     }
 
-/*    public  void deleteTask(String title) {
-        SQLiteDatabase db = getWritableDatabase();
-        db.beginTransaction();
-        try {
-
-            ContentValues values = new ContentValues();
-            values.put(TodoEntrySchema.TodoEntry.COL_TODOENTRY, title);
-
-            db.delete(TodoEntrySchema.TodoEntry.TABLE, TodoEntrySchema.TodoEntry.COL_TODOENTRY + "=?", new String[]{title}) ;
-            db.setTransactionSuccessful();
-        } catch (Exception e) {
-//            Log.d(TAG, "Error while trying to add post to database");
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    public  void deleteAllTasks() {
-        SQLiteDatabase db = getWritableDatabase();
-        db.beginTransaction();
-        try {
-
-
-            db.delete(TodoEntrySchema.TodoEntry.TABLE, null, null) ;
-            db.setTransactionSuccessful();
-        } catch (Exception e) {
-//            Log.d(TAG, "Error while trying to add post to database");
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    public  void updateTask(String newtitle, String oldtitle) {
-        SQLiteDatabase db = getWritableDatabase();
-        db.beginTransaction();
-        try {
-
-            ContentValues values = new ContentValues();
-            values.put(TodoEntrySchema.TodoEntry.COL_TODOENTRY, newtitle);
-
-            db.update(TodoEntrySchema.TodoEntry.TABLE, values, "title = ?", new String[]{oldtitle});
-            db.setTransactionSuccessful();
-        } catch (Exception e) {
-//            Log.d(TAG, "Error while trying to add post to database");
-        } finally {
-            db.endTransaction();
-        }
-    }
-*/}
+}

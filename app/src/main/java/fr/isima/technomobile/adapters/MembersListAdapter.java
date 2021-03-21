@@ -26,9 +26,9 @@ public class MembersListAdapter extends ArrayAdapter<Contact> {
 
         Contact contact = getItem(position);
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.group_entry, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.member_entry, parent, false);
         }
-        TextView tvTask = (TextView) convertView.findViewById(R.id.itemTitle);
+        TextView tvTask = (TextView) convertView.findViewById(R.id.member_name);
         tvTask.setText(contact.getName());
 
         convertView.setOnLongClickListener(v -> {

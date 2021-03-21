@@ -23,10 +23,21 @@ public class GroupSchema {
         public static final String COL_ID = "id";
     }
 
-    public  class Dépenses implements BaseColumns {
+    public  class Depense implements BaseColumns {
         public static final String TABLE_NAME = "depenses_table";
+        public static final String COL_ID = "id";
+        public static final String COL_GROUP_ID = "group_id";
         public static final String COL_TITLE = "title";
         public static final String COL_DATE = "date";
+    }
+
+    public  class Emission implements BaseColumns {
+        public static final String TABLE_NAME = "emission_table";
+        public static final String COL_ID = "id";
+        public static final String COL_CONTACT_PHONE = "contact_phone";
+        public static final String COL_VALUE = "value";
+        public static final String COL_DESIGNATION = "designation";
+        public static final String COL_DEPENSE_ID = "id_depense";
     }
 
 }

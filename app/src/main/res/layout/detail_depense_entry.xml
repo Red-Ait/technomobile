@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+        <TextView
+            android:id="@+id/detail_depense_membre_name"
+            android:text="Member Name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="7dp"
+            android:textColor="@color/black" />
+        <LinearLayout
+            android:paddingBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="2"
+                    android:layout_height="match_parent"
+                    android:textAlignment="center"
+                    android:gravity="center_horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Emitter"
+                            android:textAlignment="center"
+                            android:gravity="center_horizontal">
+                        </TextView>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:textAlignment="center"
+                            android:gravity="center_horizontal">
+                                <ImageView
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:src="@drawable/debit">
+                                </ImageView>
+                                <TextView
+                                    android:id="@+id/emitter_value"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:gravity="bottom"
+                                    android:text="43.92 EUR" >
+                                </TextView>
+                        </LinearLayout>
+                </LinearLayout>
+        </LinearLayout>
+        <ListView
+            android:id="@+id/emission_list"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:divider="#808080"
+            android:dividerHeight="1dp">
+        </ListView>
+</LinearLayout>

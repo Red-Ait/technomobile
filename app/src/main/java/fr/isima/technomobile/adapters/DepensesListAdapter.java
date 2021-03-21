@@ -11,7 +11,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import fr.isima.technomobile.R;
-import fr.isima.technomobile.activities.DépensesActivity;
+import fr.isima.technomobile.activities.DepensesActivity;
+import fr.isima.technomobile.activities.DetailDepenseActivity;
 import fr.isima.technomobile.activities.MainActivity;
 import fr.isima.technomobile.db.entities.Depenses;
 
@@ -19,27 +20,27 @@ public class DepensesListAdapter extends ArrayAdapter<Depenses> {
 
     private static final String TAG = "ADAPTER";
 
-    public DepensesListAdapter(Context context, ArrayList<Depenses> dépenses) {
-        super(context, 0, dépenses);
+    public DepensesListAdapter(Context context, ArrayList<Depenses> depenses) {
+        super(context, 0, depenses);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        Depenses dépense = getItem(position);
+        Depenses depense = getItem(position);
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.depense_entry, parent, false);
         }
         TextView tvTask = (TextView) convertView.findViewById(R.id.itemTitle);
-        tvTask.setText(dépense.getTitle());
+        tvTask.setText(depense.getTitle());
 
         TextView tvTask2 = (TextView) convertView.findViewById(R.id.date);
-        tvTask2.setText(dépense.getDate());
+        tvTask2.setText(depense.getDate());
 
 
         convertView.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.getInstanceActivity(), DépensesActivity.class);
-            MainActivity.getInstanceActivity().startActivity(intent);
+            Intent intent = new Intent(DepensesActivity.getInstanceActivity(), DetailDepenseActivity.class).putExtra("depense", depense);
+            DepensesActivity.getInstanceActivity().startActivity(intent);
         });
 
         return convertView;

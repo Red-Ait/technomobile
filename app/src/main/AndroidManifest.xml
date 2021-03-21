@@ -3,6 +3,7 @@
     package="fr.isima.technomobile">
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,8 +11,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TechnoMobile">
+        <activity android:name=".activities.DetailDepenseActivity"
+            android:label="@string/title_activity_depenses"
+            android:theme="@style/Theme.TechnoMobile.NoActionBar" />
         <activity
-            android:name=".activities.DépensesActivity"
+            android:name=".activities.DepensesActivity"
             android:label="@string/title_activity_depenses"
             android:theme="@style/Theme.TechnoMobile.NoActionBar" />
         <activity
