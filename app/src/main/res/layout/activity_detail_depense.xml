@@ -55,6 +55,7 @@
                 </TextView>
             </LinearLayout>
             <TextView
+                android:id="@+id/depense_sum"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -62,7 +63,7 @@
                 android:textSize="24dp"
                 android:textAlignment="center"
                 android:layout_gravity="center"
-                android:text="122 EUR">
+                android:text="0.00 EUR">
 
             </TextView>
         </LinearLayout>

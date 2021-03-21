@@ -51,11 +51,28 @@
                                 </TextView>
                         </LinearLayout>
                 </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="2"
+                    android:layout_height="match_parent"
+                    android:textAlignment="center"
+                    android:gravity="center_horizontal">
+                        <Button
+                            android:id="@+id/add_emission"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Emission +"
+                            android:textAlignment="center"
+                            android:gravity="center_horizontal">
+                        </Button>
+                </LinearLayout>
         </LinearLayout>
         <ListView
             android:id="@+id/emission_list"
             android:layout_width="match_parent"
             android:layout_height="55dp"
+            android:padding="15dp"
             android:divider="#808080"
             android:dividerHeight="1dp">
         </ListView>

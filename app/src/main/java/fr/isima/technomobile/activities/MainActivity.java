@@ -27,6 +27,7 @@ import fr.isima.technomobile.db.entities.Group;
 public class MainActivity extends AppCompatActivity {
 
     public static WeakReference<MainActivity> weakActivity;
+    private static final String TAG = "LOG_INF";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

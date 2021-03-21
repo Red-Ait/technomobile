@@ -18,7 +18,7 @@ import fr.isima.technomobile.db.entities.Group;
 
 public class MemberDBHelper extends SQLiteOpenHelper {
 
-    private static final String TAG = "BD_HELPER";
+    private static final String TAG = "LOG_INF";
     private Context context;
 
     public MemberDBHelper(Context context) {
@@ -44,7 +44,6 @@ public class MemberDBHelper extends SQLiteOpenHelper {
 
         Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNo));
 
-        List<Contact> contacts = new ArrayList<>();
         ContentResolver cr = context.getContentResolver();
         Cursor cursor = cr.query(uri,
                 new String[] {ContactsContract.PhoneLookup.DISPLAY_NAME, ContactsContract.PhoneLookup._ID},

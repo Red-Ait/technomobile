@@ -17,6 +17,8 @@ import fr.isima.technomobile.db.entities.Emission;
 
 public class EmissionListAdapter extends ArrayAdapter<Emission> {
 
+    private static final String TAG = "LOG_INF";
+
     public EmissionListAdapter(Context context, ArrayList<Emission> emissions) {
         super(context, 0, emissions);
     }

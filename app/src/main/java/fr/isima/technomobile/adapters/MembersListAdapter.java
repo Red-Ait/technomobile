@@ -15,7 +15,7 @@ import fr.isima.technomobile.db.entities.Contact;
 
 public class MembersListAdapter extends ArrayAdapter<Contact> {
 
-    private static final String TAG = "ADAPTER";
+    private static final String TAG = "LOG_INF";
 
     public MembersListAdapter(Context context, ArrayList<Contact> groups) {
         super(context, 0, groups);

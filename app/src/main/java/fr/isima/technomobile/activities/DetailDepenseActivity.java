@@ -3,6 +3,7 @@ package fr.isima.technomobile.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -14,6 +15,7 @@ import java.util.List;
 import fr.isima.technomobile.R;
 import fr.isima.technomobile.adapters.DetailDepenseListAdapter;
 import fr.isima.technomobile.adapters.MembersListAdapter;
+import fr.isima.technomobile.db.EmissionBDHelper;
 import fr.isima.technomobile.db.MemberDBHelper;
 import fr.isima.technomobile.db.entities.Contact;
 import fr.isima.technomobile.db.entities.Depenses;
@@ -22,6 +24,7 @@ import fr.isima.technomobile.db.entities.Emission;
 
 public class DetailDepenseActivity extends AppCompatActivity {
 
+    private static final String TAG = "LOG_INF";
     private Depenses selectedDepense;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +49,15 @@ public class DetailDepenseActivity extends AppCompatActivity {
 
         ArrayList<DetailDepense> array = new ArrayList<>();
         for(Contact c : contacts) {
-            array.add(new DetailDepense(c));
+            array.add(new DetailDepense(c, selectedDepense.getId()));
+            EmissionBDHelper emissionBDHelper = new EmissionBDHelper(this);
+            List<Emission> emissions = emissionBDHelper.getAllEmission(selectedDepense.getId(), c.getNumber());
+
         }
 
         DetailDepenseListAdapter adapter = new DetailDepenseListAdapter(this, array);
         listView.setAdapter(adapter);
+
+        Log.i(TAG, "Dep det Act updt");
     }
 }

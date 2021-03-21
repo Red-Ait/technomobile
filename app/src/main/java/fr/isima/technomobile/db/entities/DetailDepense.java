@@ -7,9 +7,14 @@ public class DetailDepense {
 
     private Contact member;
     private List<Emission> emissions = new ArrayList<>();
+    private int depenseId;
 
     public DetailDepense(Contact member) {
         this.member = member;
+    }
+    public DetailDepense(Contact member, int depenseId) {
+        this.member = member;
+        this.depenseId = depenseId;
     }
 
     public DetailDepense() {
@@ -30,5 +35,13 @@ public class DetailDepense {
 
     public void setEmissions(List<Emission> emissions) {
         this.emissions = emissions;
+    }
+
+    public int getDepenseId() {
+        return depenseId;
+    }
+
+    public void setDepenseId(int depenseId) {
+        this.depenseId = depenseId;
     }
 }

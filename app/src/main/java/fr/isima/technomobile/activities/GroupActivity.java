@@ -14,6 +14,7 @@ import fr.isima.technomobile.db.entities.Group;
 
 public class GroupActivity extends AppCompatActivity {
 
+    private static final String TAG = "LOG_INF";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

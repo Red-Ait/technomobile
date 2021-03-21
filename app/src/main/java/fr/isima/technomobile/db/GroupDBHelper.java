@@ -14,7 +14,7 @@ import fr.isima.technomobile.db.entities.Group;
 
 public class GroupDBHelper extends SQLiteOpenHelper {
 
-    private static final String TAG = "BD_HELPER";
+    private static final String TAG = "LOG_INF";
 
     public GroupDBHelper(Context context) {
         super(context, GroupSchema.DB_NAME, null, GroupSchema.DB_VERSION);

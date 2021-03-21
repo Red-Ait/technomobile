@@ -1,22 +1,36 @@
 package fr.isima.technomobile.adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+
+import java.sql.Date;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import fr.isima.technomobile.R;
+import fr.isima.technomobile.activities.DepensesActivity;
+import fr.isima.technomobile.db.DepensesDBHelper;
+import fr.isima.technomobile.db.EmissionBDHelper;
 import fr.isima.technomobile.db.entities.Contact;
 import fr.isima.technomobile.db.entities.Depenses;
 import fr.isima.technomobile.db.entities.DetailDepense;
@@ -24,8 +38,12 @@ import fr.isima.technomobile.db.entities.Emission;
 
 public class DetailDepenseListAdapter extends ArrayAdapter<DetailDepense> {
 
+    private static final String TAG = "LOG_INF";
+
+    private Context context;
     public DetailDepenseListAdapter(Context context, ArrayList<DetailDepense> detailDepenses) {
         super(context, 0, detailDepenses);
+        this.context = context;
     }
 
     @Override
@@ -37,32 +55,88 @@ public class DetailDepenseListAdapter extends ArrayAdapter<DetailDepense> {
         TextView title = convertView.findViewById(R.id.detail_depense_membre_name);
         title.setText(detailDepense.getMember().getName());
 
-        NumberFormat formatter = new DecimalFormat("#0.00");
-
-        double emitter = 0.0;
-        for(Emission e : detailDepense.getEmissions()) {
-            emitter += e.getValue();
-        }
-        TextView emitterTxt = convertView.findViewById(R.id.emitter_value);
-        emitterTxt.setText(formatter.format(emitter) + " EUR");
 
 
-        initListEmission(convertView,detailDepense.getEmissions());
+        Button addEmission = convertView.findViewById(R.id.add_emission);
+        addEmission.setOnClickListener(v -> {
+            showAddDepensesForm(context, detailDepense.getMember(), detailDepense.getDepenseId());
+        });
+
+        initListEmission(convertView, detailDepense.getMember(), detailDepense.getDepenseId());
 
         return convertView;
     }
 
-    private void initListEmission(View view, List<Emission> emissions) {
+    private void initListEmission(View view, Contact contact, int depenseId) {
+
+        EmissionBDHelper emissionBDHelper = new EmissionBDHelper(context);
+        List<Emission> emissions = emissionBDHelper.getAllEmission(depenseId, contact.getNumber());
+
+        double emitterSum = 0.0;
+        for(Emission e : emissions) {
+            emitterSum += e.getValue();
+        }
+        NumberFormat formatter = new DecimalFormat("#0.00");
+        TextView emitterTxt = view.findViewById(R.id.emitter_value);
+        emitterTxt.setText(formatter.format(emitterSum) + " EUR");
 
         ListView listView = (ListView) view.findViewById(R.id.emission_list);
 
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) listView.getLayoutParams();
-        params.height = 155 * emissions.size();
+        params.height = 155 * emissions.size() + 50;
         listView.setLayoutParams(params);
         listView.requestLayout();
 
         EmissionListAdapter adapter = new EmissionListAdapter(getContext(), new ArrayList<>(emissions));
         listView.setAdapter(adapter);
+        Log.i(TAG, "Dep det adap init lis");
 
+    }
+
+
+
+    public void showAddDepensesForm(Context context, Contact contact, int depenseId) {
+
+        ScrollView scrollView = new ScrollView(context);
+        scrollView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+        scrollView.addView(linearLayout);
+        EditText des = new EditText(context);
+        EditText val = new EditText(context);
+        val.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+        TextView text = new TextView(context);
+        text.setText("Désignation");
+        linearLayout.addView(text);
+        linearLayout.addView(des);
+        TextView text2 = new TextView(context);
+        text2.setText("Valeur d\'émission");
+        linearLayout.addView(text2);
+        linearLayout.addView(val);
+
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setTitle("Ajouter émission")
+                .setView(scrollView)
+                .setPositiveButton("Ajouter", new DialogInterface.OnClickListener () {
+                    @ Override
+                    public void onClick ( DialogInterface dialog , int which ) {
+                        Emission emission = new Emission();
+                        emission.setDesignation(String.valueOf(des.getText()));
+                        emission.setValue(Integer.parseInt(String.valueOf(val.getText())));
+                        emission.setMember(contact);
+                        EmissionBDHelper emissionBDHelper = new EmissionBDHelper(context);
+                        emissionBDHelper.addEmissionToDepense(emission, depenseId);
+                        Log.i(TAG, "Det DET  Adapt add dep");
+
+                    }
+                })
+                .setNegativeButton ("Annuler", null )
+                .create();
+        dialog.show() ;
     }
 }

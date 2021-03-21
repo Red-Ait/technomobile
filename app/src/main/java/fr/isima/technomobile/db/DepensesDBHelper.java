@@ -15,7 +15,7 @@ import fr.isima.technomobile.db.entities.Depenses;
 public class DepensesDBHelper extends SQLiteOpenHelper {
 
     private Context context;
-    private static final String TAG = "BD_HELPER";
+    private static final String TAG = "LOG_INF";
 
     public DepensesDBHelper(Context context) {
         super(context, GroupSchema.DB_NAME, null, GroupSchema.DB_VERSION);

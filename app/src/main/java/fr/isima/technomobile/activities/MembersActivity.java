@@ -44,7 +44,7 @@ import fr.isima.technomobile.db.entities.Group;
 public class MembersActivity extends AppCompatActivity {
 
     public static WeakReference<MembersActivity> weakActivity;
-    private static final String TAG = "ADAPTER";
+    private static final String TAG = "LOG_INF";
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 400;
     private List<Contact> selectedContact = new ArrayList<>();
     Group selectedGroup = null;

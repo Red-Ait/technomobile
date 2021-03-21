@@ -32,7 +32,7 @@ import fr.isima.technomobile.db.entities.Group;
 public class DepensesActivity extends AppCompatActivity {
 
     public static WeakReference<DepensesActivity> weakActivity;
-    private static final String TAG = "ADAPTER";
+    private static final String TAG = "LOG_INF";
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 400;
     Group selectedGroup = null;
 
@@ -73,6 +73,7 @@ public class DepensesActivity extends AppCompatActivity {
         array.addAll(dépensesDBHelper.getAllDépensess(selectedGroup.getId()));
         DepensesListAdapter adapter = new DepensesListAdapter(this, array);
         listView.setAdapter(adapter);
+        Log.i(TAG, "Dep Act updt");
     }
 
     public void showAddDepensesForm() {

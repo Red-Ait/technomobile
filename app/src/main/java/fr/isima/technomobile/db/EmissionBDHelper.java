@@ -16,7 +16,7 @@ import fr.isima.technomobile.db.entities.Emission;
 
 public class EmissionBDHelper extends SQLiteOpenHelper {
 
-    private static final String TAG = "BD_HELPER";
+    private static final String TAG = "LOG_INF";
     private Context context;
     public EmissionBDHelper(Context context) {
         super(context, GroupSchema.DB_NAME, null, GroupSchema.DB_VERSION);
@@ -39,34 +39,37 @@ public class EmissionBDHelper extends SQLiteOpenHelper {
         db.beginTransaction();
         try {
             ContentValues values = new ContentValues();
+            Log.d(TAG, "==> " + emission.getMember().getNumber());
             values.put(GroupSchema.Emission.COL_CONTACT_PHONE, emission.getMember().getNumber());
             values.put(GroupSchema.Emission.COL_DEPENSE_ID, depenseId);
             values.put(GroupSchema.Emission.COL_VALUE, emission.getValue());
             values.put(GroupSchema.Emission.COL_DESIGNATION, emission.getDesignation());
             db.insertOrThrow(GroupSchema.Emission.TABLE_NAME, null, values);
             db.setTransactionSuccessful();
-            Log.d(TAG, "Dépenses details Added");
+            Log.d(TAG, "Mission Added");
 
             // TODO call add dep details
         } catch (Exception e) {
-            Log.d(TAG, "Error while trying to add post to database");
+            Log.d(TAG, "Error while trying to add post to database" + e.getMessage());
         } finally {
             db.endTransaction();
         }
     }
 
-    public List<Emission> getAllEmission(int depenseId) {
+    public List<Emission> getAllEmission(int depenseId, String phoneNo) {
         MemberDBHelper memberDBHelper = new MemberDBHelper(context);
         List<Emission> emissions = new ArrayList<>();
-        String TASKS_SELECT_QUERY = String.format("SELECT * FROM %s WHERE %s = %s",
-                GroupSchema.Emission.TABLE_NAME, GroupSchema.Emission.COL_DEPENSE_ID, depenseId);
+        String TASKS_SELECT_QUERY = String.format("SELECT * FROM %s WHERE %s = %s AND %s = \'%s\'",
+                GroupSchema.Emission.TABLE_NAME, GroupSchema.Emission.COL_DEPENSE_ID, depenseId, GroupSchema.Emission.COL_CONTACT_PHONE, phoneNo);
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(TASKS_SELECT_QUERY, null);
         try {
             if (cursor.moveToFirst()) {
                 do {
                     Emission emission = new Emission();
-                    emission.setMember(memberDBHelper.getMemberByPhoneNo(cursor.getString(cursor.getColumnIndex(GroupSchema.Member.COL_PHONE_NO))));
+                    emission.setMember(memberDBHelper.getMemberByPhoneNo(phoneNo));
+                    emission.setValue(Double.parseDouble(cursor.getString(cursor.getColumnIndex(GroupSchema.Emission.COL_VALUE))));
+                    emission.setDesignation(cursor.getString(cursor.getColumnIndex(GroupSchema.Emission.COL_DESIGNATION)));
                     emissions.add(emission);
                 } while(cursor.moveToNext());
             }

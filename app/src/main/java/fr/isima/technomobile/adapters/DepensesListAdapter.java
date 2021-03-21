@@ -18,7 +18,7 @@ import fr.isima.technomobile.db.entities.Depenses;
 
 public class DepensesListAdapter extends ArrayAdapter<Depenses> {
 
-    private static final String TAG = "ADAPTER";
+    private static final String TAG = "LOG_INF";
 
     public DepensesListAdapter(Context context, ArrayList<Depenses> depenses) {
         super(context, 0, depenses);
