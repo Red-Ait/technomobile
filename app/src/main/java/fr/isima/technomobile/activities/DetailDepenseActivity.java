@@ -2,6 +2,7 @@ package fr.isima.technomobile.activities;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -38,6 +39,10 @@ public class DetailDepenseActivity extends AppCompatActivity {
 
         selectedDepense = getIntent().getExtras().getParcelable("depense");
 
+        Toolbar toolbar = findViewById(R.id.detail_depenses_toolbar);
+        toolbar.setTitle("Dépense : " + selectedDepense.getTitle());
+        setSupportActionBar(toolbar);
+
         TextView title = (TextView) findViewById(R.id.depense_name);
         title.setText(selectedDepense.getTitle());
 
@@ -67,6 +72,7 @@ public class DetailDepenseActivity extends AppCompatActivity {
         depenseSum = 0.0;
         for(Contact c : contacts) {
             array.add(new DetailDepense(c, selectedDepense.getId()));
+            //
             EmissionBDHelper emissionBDHelper = new EmissionBDHelper(this);
             List<Emission> emissions = emissionBDHelper.getAllEmission(selectedDepense.getId(), c.getNumber());
             for(Emission e : emissions) {
@@ -77,7 +83,7 @@ public class DetailDepenseActivity extends AppCompatActivity {
         TextView depSum = findViewById(R.id.depense_sum);
         depSum.setText(formatter.format(depenseSum) + " EUR");
 
-        DetailDepenseListAdapter adapter = new DetailDepenseListAdapter(this, array);
+        DetailDepenseListAdapter adapter = new DetailDepenseListAdapter(this, array, depenseSum);
         listView.setAdapter(adapter);
 
         Log.i(TAG, "Dep det Act updt");

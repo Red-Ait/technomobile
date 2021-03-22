@@ -45,7 +45,7 @@ public class DepensesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_depenses);
 
         Toolbar toolbar = findViewById(R.id.depenses_toolbar);
-        toolbar.setTitle("Dépenses : " + selectedGroup.getTitle());
+        toolbar.setTitle("Groupe : " + selectedGroup.getTitle());
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.depenses_fab);
