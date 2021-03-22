@@ -48,4 +48,5 @@ public class GroupSchema {
         public static final String COL_DEPENSE_ID = "id_depense";
     }
 
+
 }
