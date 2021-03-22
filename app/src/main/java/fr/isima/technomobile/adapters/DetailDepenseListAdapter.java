@@ -2,6 +2,7 @@ package fr.isima.technomobile.adapters;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.text.InputType;
 import android.util.Log;
@@ -30,6 +31,7 @@ import java.util.List;
 
 import fr.isima.technomobile.R;
 import fr.isima.technomobile.activities.DepensesActivity;
+import fr.isima.technomobile.activities.DetailDepenseActivity;
 import fr.isima.technomobile.db.DepensesDBHelper;
 import fr.isima.technomobile.db.EmissionBDHelper;
 import fr.isima.technomobile.db.PartitionDBHelper;

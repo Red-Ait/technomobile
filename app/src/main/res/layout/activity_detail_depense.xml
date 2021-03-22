@@ -66,6 +66,15 @@
                 android:text="0.00 EUR">
 
             </TextView>
+            <Button
+                android:id="@+id/send_recap"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="3dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Récap"
+                android:drawableLeft="@android:drawable/ic_dialog_email">
+            </Button>
         </LinearLayout>
         <ListView
             android:id="@+id/detail_depense_list"
