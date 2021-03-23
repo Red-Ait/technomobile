@@ -1,8 +1,15 @@
 package fr.isima.technomobile.activities;
 
+import android.content.ClipData;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
@@ -12,20 +19,26 @@ import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.ajts.androidmads.library.ExcelToSQLite;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.ajts.androidmads.library.SQLiteToExcel;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 
 import fr.isima.technomobile.R;
 import fr.isima.technomobile.adapters.DepensesListAdapter;
 import fr.isima.technomobile.db.DepensesDBHelper;
+import fr.isima.technomobile.db.GroupSchema;
 import fr.isima.technomobile.db.entities.Depenses;
 import fr.isima.technomobile.db.entities.Group;
 
@@ -35,6 +48,7 @@ public class DepensesActivity extends AppCompatActivity {
     private static final String TAG = "LOG_INF";
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 400;
     Group selectedGroup = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +69,8 @@ public class DepensesActivity extends AppCompatActivity {
                 showAddDepensesForm();
             }
         });
+
+
         updateDépensesList();
         weakActivity = new WeakReference<DepensesActivity>(DepensesActivity.this);
 
@@ -62,6 +78,93 @@ public class DepensesActivity extends AppCompatActivity {
 
     public static DepensesActivity getInstanceActivity() {
         return weakActivity.get();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_depenses, menu);
+        return true;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.export:
+
+                // Export SQLite DB as EXCEL FILE
+                SQLiteToExcel sqliteToExcel = new SQLiteToExcel(getApplicationContext(), "fr.isima.technomobile.db");
+                Log.d(TAG, "export on");
+                sqliteToExcel.exportSingleTable("depenses_table", "depenses.xls", new SQLiteToExcel.ExportListener() {
+                    @Override
+                    public void onStart() {
+
+                    }
+
+                    @Override
+                    public void onCompleted(String filePath) {
+                        Log.d(TAG, "done");
+
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Log.d(TAG, "error");
+                        e.getMessage();
+                    }
+
+                });
+                return true;
+
+            case R.id.import_db:
+
+                Log.d(TAG, "import");
+         /*       Intent intent2 = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent2.addCategory(Intent.CATEGORY_OPENABLE);
+                intent2.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                intent2.setType("application/json");
+                intent2.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Environment.getStorageDirectory().getPath() + "primary/depenses.xls");
+                intent2.putExtra(Intent.EXTRA_TITLE,"depenses-" + Instant.now() + ".json");
+
+                Log.d(TAG, "intent");*/
+                // Is used to import data from excel without dropping table
+                // ExcelToSQLite excelToSQLite = new ExcelToSQLite(getApplicationContext(), DBHelper.DB_NAME);
+
+                // if you want to add column in excel and import into DB, you must drop the table
+                ExcelToSQLite excelToSQLite = new ExcelToSQLite(getApplicationContext(), "fr.isima.technomobile.db", false);
+                // Import EXCEL FILE to SQLite
+                excelToSQLite.importFromFile( "/storage/self/primary/depenses.xls", new ExcelToSQLite.ImportListener() {
+                    @Override
+                    public void onStart() {
+                        Log.d(TAG, "start");
+                    }
+
+                    @Override
+                    public void onCompleted(String dbName) {
+                        Log.d(TAG, "done");
+
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Log.d(TAG, "error");
+                        e.getMessage();
+
+                    }
+                });
+                return  true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+
     }
 
     public void updateDépensesList() {

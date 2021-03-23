@@ -1,16 +1,22 @@
 package fr.isima.technomobile.activities;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.DialogInterface;
+import android.os.Build;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.ajts.androidmads.library.SQLiteToExcel;
 
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
@@ -140,6 +146,95 @@ public class DetailDepenseActivity extends AppCompatActivity {
                 .setNegativeButton ("Non", null )
                 .create();
         dialog.show() ;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_emissions, menu);
+        return true;
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.export_emission:
+                // Export SQLite DB as EXCEL FILE
+                SQLiteToExcel sqliteToExcel = new SQLiteToExcel(getApplicationContext(), "fr.isima.technomobile.db");
+                Log.d(TAG, "export on");
+                sqliteToExcel.exportSingleTable("emission_table", "emission.xls", new SQLiteToExcel.ExportListener() {
+                    @Override
+                    public void onStart() {
+                        Log.d(TAG, "staaaaaaaaaaaaart");
+
+                    }
+
+                    @Override
+                    public void onCompleted(String filePath) {
+                        Log.d(TAG, "done");
+
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Log.d(TAG, "error");
+                        e.getMessage();
+                    }
+
+                });
+                return true;
+
+            /*case R.id.import_db:
+
+                Log.d(TAG, "import");
+                Intent intent2 = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent2.addCategory(Intent.CATEGORY_OPENABLE);
+                intent2.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                intent2.setType("application/json");
+                intent2.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Environment.getStorageDirectory().getPath() + "primary/depenses.xls");
+                intent2.putExtra(Intent.EXTRA_TITLE,"depenses-" + Instant.now() + ".json");
+
+                Log.d(TAG, "intent");
+                // Is used to import data from excel without dropping table
+                // ExcelToSQLite excelToSQLite = new ExcelToSQLite(getApplicationContext(), DBHelper.DB_NAME);
+
+                // if you want to add column in excel and import into DB, you must drop the table
+                ExcelToSQLite excelToSQLite = new ExcelToSQLite(getApplicationContext(), "fr.isima.technomobile.db", false);
+                // Import EXCEL FILE to SQLite
+                excelToSQLite.importFromFile(Environment.getStorageDirectory().getPath() + "primary/depenses.xls", new ExcelToSQLite.ImportListener() {
+                    @Override
+                    public void onStart() {
+                        Log.d(TAG, "start");
+                    }
+
+                    @Override
+                    public void onCompleted(String dbName) {
+                        Log.d(TAG, "done");
+
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Log.d(TAG, "error");
+                        e.getMessage();
+
+                    }
+                });
+                return  true;*/
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+
     }
 
 }
