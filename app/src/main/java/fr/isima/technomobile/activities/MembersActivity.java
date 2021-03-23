@@ -3,6 +3,7 @@ package fr.isima.technomobile.activities;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.ContentResolver;
@@ -71,7 +72,11 @@ public class MembersActivity extends AppCompatActivity {
 
         updateMembersList();
         weakActivity = new WeakReference<>(MembersActivity.this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
+        }
     }
+
     public static MembersActivity getInstanceActivity() {
         return weakActivity.get();
     }
@@ -172,7 +177,6 @@ public class MembersActivity extends AppCompatActivity {
                                            int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission is granted
                 askForContacts();
             } else {
                 Toast.makeText(this, "Nous avons besoin de votre permission pour afficher les contacts", Toast.LENGTH_SHORT).show();
