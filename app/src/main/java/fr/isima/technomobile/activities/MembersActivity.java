@@ -59,7 +59,7 @@ public class MembersActivity extends AppCompatActivity {
         setContentView(R.layout.activity_members);
 
         Toolbar toolbar = findViewById(R.id.members_toolbar);
-        toolbar.setTitle("Members : " + selectedGroup.getTitle());
+        toolbar.setTitle("Members - " + selectedGroup.getTitle());
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.members_fab);
