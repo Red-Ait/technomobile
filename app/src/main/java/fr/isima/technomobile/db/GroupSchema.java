@@ -34,6 +34,7 @@ public class GroupSchema {
     public  class Emission implements BaseColumns {
         public static final String TABLE_NAME = "emission_table";
         public static final String COL_ID = "id";
+        public static final String COL_CONTACT_NAME = "contact_name";
         public static final String COL_CONTACT_PHONE = "contact_phone";
         public static final String COL_VALUE = "value";
         public static final String COL_DESIGNATION = "designation";

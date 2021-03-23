@@ -49,7 +49,6 @@ public class DepensesActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 400;
     Group selectedGroup = null;
 
-    //SQLiteToExcel sqliteToExcel = new SQLiteToExcel(this, "fr.isima.technomobile.db", "C:/Users/Lenovo/AndroidStudioProjects/web");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +59,7 @@ public class DepensesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_depenses);
 
         Toolbar toolbar = findViewById(R.id.depenses_toolbar);
-        toolbar.setTitle("Dépenses : " + selectedGroup.getTitle());
+        toolbar.setTitle("Groupe : " + selectedGroup.getTitle());
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.depenses_fab);
@@ -90,6 +89,7 @@ public class DepensesActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.R)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -101,7 +101,7 @@ public class DepensesActivity extends AppCompatActivity {
                 // Export SQLite DB as EXCEL FILE
                 SQLiteToExcel sqliteToExcel = new SQLiteToExcel(getApplicationContext(), "fr.isima.technomobile.db");
                 Log.d(TAG, "export on");
-                sqliteToExcel.exportSingleTable("depenses_table","depenses.xls", new SQLiteToExcel.ExportListener() {
+                sqliteToExcel.exportSingleTable("depenses_table", "depenses.xls", new SQLiteToExcel.ExportListener() {
                     @Override
                     public void onStart() {
 
@@ -109,7 +109,8 @@ public class DepensesActivity extends AppCompatActivity {
 
                     @Override
                     public void onCompleted(String filePath) {
-                        //Utils.showSnackBar(view, "Successfully Exported");
+                        Log.d(TAG, "done");
+
                     }
 
                     @Override
@@ -124,21 +125,21 @@ public class DepensesActivity extends AppCompatActivity {
             case R.id.import_db:
 
                 Log.d(TAG, "import");
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-                intent.setType("application/json");
-                intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Environment.getStorageDirectory().getPath() + "primary/depenses.xls");
-                intent.putExtra(Intent.EXTRA_TITLE,"depenses-" + Instant.now() + ".json");
+         /*       Intent intent2 = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent2.addCategory(Intent.CATEGORY_OPENABLE);
+                intent2.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                intent2.setType("application/json");
+                intent2.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Environment.getStorageDirectory().getPath() + "primary/depenses.xls");
+                intent2.putExtra(Intent.EXTRA_TITLE,"depenses-" + Instant.now() + ".json");
 
-                Log.d(TAG, "intent");
+                Log.d(TAG, "intent");*/
                 // Is used to import data from excel without dropping table
                 // ExcelToSQLite excelToSQLite = new ExcelToSQLite(getApplicationContext(), DBHelper.DB_NAME);
 
                 // if you want to add column in excel and import into DB, you must drop the table
                 ExcelToSQLite excelToSQLite = new ExcelToSQLite(getApplicationContext(), "fr.isima.technomobile.db", false);
                 // Import EXCEL FILE to SQLite
-                excelToSQLite.importFromFile(Environment.getStorageDirectory().getPath() + "primary/depenses.xls", new ExcelToSQLite.ImportListener() {
+                excelToSQLite.importFromFile( "/storage/self/primary/depenses.xls", new ExcelToSQLite.ImportListener() {
                     @Override
                     public void onStart() {
                         Log.d(TAG, "start");
