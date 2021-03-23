@@ -19,7 +19,7 @@ import fr.isima.technomobile.db.entities.Group;
 
 public class GroupListAdapter extends ArrayAdapter<Group> {
 
-    private static final String TAG = "ADAPTER";
+    private static final String TAG = "LOG_INF";
 
     public GroupListAdapter(Context context, ArrayList<Group> groups) {
         super(context, 0, groups);
