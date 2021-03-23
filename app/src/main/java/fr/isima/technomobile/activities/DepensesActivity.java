@@ -291,7 +291,7 @@ public class DepensesActivity extends AppCompatActivity {
                     public void onClick ( DialogInterface dialog , int which ) {
 
                         String title = String.valueOf(editText.getText());
-                        SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+                        SimpleDateFormat dateformat = new SimpleDateFormat("dd-MM-yyyy");
                         String date = dateformat.format(new Date( (datePicker.getYear())-1900 , datePicker.getMonth(),datePicker.getDayOfMonth()));
                         DepensesDBHelper dépensesDBHelper = new DepensesDBHelper(DepensesActivity.this.getApplicationContext());
                         dépensesDBHelper.addDépenses(title,date, selectedGroup.getId());
