@@ -2,6 +2,8 @@ package fr.isima.technomobile.adapters;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +31,7 @@ import java.util.List;
 
 import fr.isima.technomobile.R;
 import fr.isima.technomobile.activities.DepensesActivity;
+import fr.isima.technomobile.activities.DetailDepenseActivity;
 import fr.isima.technomobile.db.DepensesDBHelper;
 import fr.isima.technomobile.db.EmissionBDHelper;
 import fr.isima.technomobile.db.PartitionDBHelper;
@@ -42,9 +45,11 @@ public class DetailDepenseListAdapter extends ArrayAdapter<DetailDepense> {
     private static final String TAG = "LOG_INF";
 
     private Context context;
-    public DetailDepenseListAdapter(Context context, ArrayList<DetailDepense> detailDepenses) {
+    private double sumDepense;
+    public DetailDepenseListAdapter(Context context, ArrayList<DetailDepense> detailDepenses, double s) {
         super(context, 0, detailDepenses);
         this.context = context;
+        this.sumDepense = s;
     }
 
     @Override
@@ -78,16 +83,33 @@ public class DetailDepenseListAdapter extends ArrayAdapter<DetailDepense> {
         return convertView;
     }
     void updatePart(View convertView, DetailDepense detailDepense) {
-        TextView partition = convertView.findViewById(R.id.detail_depense_membre_part);
+
         PartitionDBHelper partitionDBHelper = new PartitionDBHelper(context);
         double val = partitionDBHelper.getPartition(detailDepense.getMember().getNumber(), detailDepense.getDepenseId());
+        double creditVal = (sumDepense * val)/100;
+        double emitterVal = getEmitterVal(detailDepense.getMember(), detailDepense.getDepenseId());
+        double balanceVal = emitterVal - creditVal;
+
         NumberFormat formatter = new DecimalFormat("#0.00");
+
+        TextView partition = convertView.findViewById(R.id.detail_depense_membre_part);
         partition.setText(formatter.format(val) + " %");
 
+        TextView credit = convertView.findViewById(R.id.credit_value);
+        credit.setText(formatter.format(creditVal) + " EUR");
+
+        TextView balance = convertView.findViewById(R.id.balance_value);
+        balance.setText(formatter.format(balanceVal) + " EUR");
+
+        if(balanceVal < 0) {
+            balance.setTextColor(Color.parseColor("#FF0000"));
+        } else {
+            balance.setTextColor(Color.parseColor("#00FF00"));
+        }
+
+
     }
-
-    private void initListEmission(View view, Contact contact, int depenseId) {
-
+    private double getEmitterVal( Contact contact, int depenseId) {
         EmissionBDHelper emissionBDHelper = new EmissionBDHelper(context);
         List<Emission> emissions = emissionBDHelper.getAllEmission(depenseId, contact.getNumber());
 
@@ -95,9 +117,17 @@ public class DetailDepenseListAdapter extends ArrayAdapter<DetailDepense> {
         for(Emission e : emissions) {
             emitterSum += e.getValue();
         }
+        return emitterSum;
+    }
+
+    private void initListEmission(View view, Contact contact, int depenseId) {
+
+        EmissionBDHelper emissionBDHelper = new EmissionBDHelper(context);
+        List<Emission> emissions = emissionBDHelper.getAllEmission(depenseId, contact.getNumber());
+
         NumberFormat formatter = new DecimalFormat("#0.00");
         TextView emitterTxt = view.findViewById(R.id.emitter_value);
-        emitterTxt.setText(formatter.format(emitterSum) + " EUR");
+        emitterTxt.setText(formatter.format(getEmitterVal(contact, depenseId)) + " EUR");
 
         ListView listView = (ListView) view.findViewById(R.id.emission_list);
 
