@@ -9,9 +9,11 @@ import androidx.core.content.ContextCompat;
 
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ajts.androidmads.library.ExcelToSQLite;
 import com.ajts.androidmads.library.SQLiteToExcel;
 
 import java.lang.ref.WeakReference;
@@ -46,6 +49,7 @@ public class DetailDepenseActivity extends AppCompatActivity {
     private static final String TAG = "LOG_INF";
     private Depenses selectedDepense;
     ArrayList<DetailDepense> detailDepenses = new ArrayList<>();
+    private static final int FILE_SELECT_CODE = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +111,59 @@ public class DetailDepenseActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        String path = null;
+        switch (requestCode) {
+            case FILE_SELECT_CODE:
+                if (resultCode == RESULT_OK) {
+                    // Get the Uri of the selected file
+                    Uri uri = data.getData();
+                    Log.d(TAG, "File Uri: " + uri.toString());
+                    Log.d(TAG, "File Uri: " +  uri);
+                    // Get the path
+
+                    path = uri.getPath();
+                    Log.d(TAG, "File Path: " + path);
+                    final String[] split = path.split(":");//split the path.
+                    Log.d(TAG, "split: " + split);
+                    String filePath = split[1];//assign it to a string(your choice).
+                    Log.d(TAG, "filePath: " + filePath);
+                    Log.d(TAG, "path: " + Environment.getExternalStorageDirectory().getPath()+"/"+filePath);
+
+
+                    // Get the file instance
+                    // File file = new File(path);
+                    // Initiate the upload
+                    ExcelToSQLite excelToSQLite = new ExcelToSQLite(getApplicationContext(), "fr.isima.technomobile.db", false);
+                    // Import EXCEL FILE to SQLite
+                    excelToSQLite.importFromFile(Environment.getExternalStorageDirectory().getPath()+"/"+ filePath, new ExcelToSQLite.ImportListener() {
+                        @Override
+                        public void onStart() {
+                            Log.d(TAG, "start");
+                        }
+
+                        @Override
+                        public void onCompleted(String dbName) {
+                            Log.d(TAG, "done");
+                            Toast.makeText(getApplicationContext(),"Le fichier a été importé",Toast.LENGTH_SHORT).show();
+
+
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.d(TAG, "error");
+                            e.getMessage();
+
+                        }
+                    });
+
+                }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     public void updateDetailDepenseList() {
         MemberDBHelper memberDBHelper = new MemberDBHelper(this);
         List<Contact> contacts = memberDBHelper.getAllGroupMember(selectedDepense.getGroupId());
@@ -161,7 +218,6 @@ public class DetailDepenseActivity extends AppCompatActivity {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.R)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -178,62 +234,41 @@ public class DetailDepenseActivity extends AppCompatActivity {
                 sqliteToExcel.exportSingleTable("emission_table", "emission.xls", new SQLiteToExcel.ExportListener() {
                     @Override
                     public void onStart() {
-                        Log.d(TAG, "staaaaaaaaaaaaart");
 
                     }
 
                     @Override
                     public void onCompleted(String filePath) {
-                        Log.d(TAG, "done");
+                        Toast.makeText(getApplicationContext(),"Le fichier est bien sauvegardé à l'endroit " + filePath +"",Toast.LENGTH_SHORT).show();
 
                     }
 
                     @Override
                     public void onError(Exception e) {
-                        Log.d(TAG, "error");
-                        e.getMessage();
+                        Toast.makeText(getApplicationContext(),"Erreur , veuillez réessayez ",Toast.LENGTH_SHORT).show();
+
                     }
 
                 });
                 return true;
 
-            /*case R.id.import_db:
+            case R.id.import_emission:
 
                 Log.d(TAG, "import");
-                Intent intent2 = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent2.addCategory(Intent.CATEGORY_OPENABLE);
-                intent2.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-                intent2.setType("application/json");
-                intent2.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Environment.getStorageDirectory().getPath() + "primary/depenses.xls");
-                intent2.putExtra(Intent.EXTRA_TITLE,"depenses-" + Instant.now() + ".json");
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("*/*");
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
 
-                Log.d(TAG, "intent");
-                // Is used to import data from excel without dropping table
-                // ExcelToSQLite excelToSQLite = new ExcelToSQLite(getApplicationContext(), DBHelper.DB_NAME);
+                try {
+                    startActivityForResult(
+                            Intent.createChooser(intent, "Select a File to Upload"),
+                            FILE_SELECT_CODE);
+                } catch (android.content.ActivityNotFoundException ex) {
+                    // Potentially direct the user to the Market with a Dialog
+                    Toast.makeText(this, "Please install a File Manager.",
+                            Toast.LENGTH_SHORT).show();
+                }
 
-                // if you want to add column in excel and import into DB, you must drop the table
-                ExcelToSQLite excelToSQLite = new ExcelToSQLite(getApplicationContext(), "fr.isima.technomobile.db", false);
-                // Import EXCEL FILE to SQLite
-                excelToSQLite.importFromFile(Environment.getStorageDirectory().getPath() + "primary/depenses.xls", new ExcelToSQLite.ImportListener() {
-                    @Override
-                    public void onStart() {
-                        Log.d(TAG, "start");
-                    }
-
-                    @Override
-                    public void onCompleted(String dbName) {
-                        Log.d(TAG, "done");
-
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        Log.d(TAG, "error");
-                        e.getMessage();
-
-                    }
-                });
-                return  true;*/
 
             default:
                 return super.onOptionsItemSelected(item);

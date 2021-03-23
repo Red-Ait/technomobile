@@ -1,13 +1,14 @@
 package fr.isima.technomobile.activities;
 
-import android.content.ClipData;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.DocumentsContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,17 +33,15 @@ import com.ajts.androidmads.library.ExcelToSQLite;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.ajts.androidmads.library.SQLiteToExcel;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
+import java.net.URISyntaxException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
 
 import fr.isima.technomobile.R;
 import fr.isima.technomobile.adapters.DepensesListAdapter;
 import fr.isima.technomobile.db.DepensesDBHelper;
-import fr.isima.technomobile.db.GroupSchema;
 import fr.isima.technomobile.db.entities.Depenses;
 import fr.isima.technomobile.db.entities.Group;
 
@@ -53,6 +52,7 @@ public class DepensesActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 400;
     Group selectedGroup = null;
     private static final int PERMISSION_REQUEST_CODE = 1;
+    private static final int FILE_SELECT_CODE = 0;
 
 
     @Override
@@ -138,7 +138,6 @@ public class DepensesActivity extends AppCompatActivity {
 
                 // Export SQLite DB as EXCEL FILE
                 SQLiteToExcel sqliteToExcel = new SQLiteToExcel(getApplicationContext(), "fr.isima.technomobile.db");
-                Log.d(TAG, "export on");
                 sqliteToExcel.exportSingleTable("depenses_table", "depenses.xls", new SQLiteToExcel.ExportListener() {
                     @Override
                     public void onStart() {
@@ -148,13 +147,21 @@ public class DepensesActivity extends AppCompatActivity {
                     @Override
                     public void onCompleted(String filePath) {
                         Log.d(TAG, "done");
+                       Toast.makeText(getApplicationContext(),"Le fichier est bien sauvegardé à l'endroit " + filePath +"",Toast.LENGTH_SHORT).show();
+                   /*    Intent intent2 = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                        intent2.addCategory(Intent.CATEGORY_OPENABLE);
+                        intent2.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                        intent2.putExtra(DocumentsContract.EXTRA_INITIAL_URI, filePath);
+                        startActivity(intent2);*/
+
+
 
                     }
 
                     @Override
                     public void onError(Exception e) {
-                        Log.d(TAG, "error");
-                        e.getMessage();
+                        Toast.makeText(getApplicationContext(),"Erreur , veuillez réessayez ",Toast.LENGTH_SHORT).show();
+
                     }
 
                 });
@@ -163,47 +170,84 @@ public class DepensesActivity extends AppCompatActivity {
             case R.id.import_db:
 
                 Log.d(TAG, "import");
-         /*       Intent intent2 = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent2.addCategory(Intent.CATEGORY_OPENABLE);
-                intent2.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-                intent2.setType("application/json");
-                intent2.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Environment.getStorageDirectory().getPath() + "primary/depenses.xls");
-                intent2.putExtra(Intent.EXTRA_TITLE,"depenses-" + Instant.now() + ".json");
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("*/*");
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
 
-                Log.d(TAG, "intent");*/
+                try {
+                    startActivityForResult(
+                            Intent.createChooser(intent, "Select a File to Upload"),
+                            FILE_SELECT_CODE);
+                } catch (android.content.ActivityNotFoundException ex) {
+                    // Potentially direct the user to the Market with a Dialog
+                    Toast.makeText(this, "Please install a File Manager.",
+                            Toast.LENGTH_SHORT).show();
+                }
+
                 // Is used to import data from excel without dropping table
                 // ExcelToSQLite excelToSQLite = new ExcelToSQLite(getApplicationContext(), DBHelper.DB_NAME);
 
                 // if you want to add column in excel and import into DB, you must drop the table
-                ExcelToSQLite excelToSQLite = new ExcelToSQLite(getApplicationContext(), "fr.isima.technomobile.db", false);
-                // Import EXCEL FILE to SQLite
-                excelToSQLite.importFromFile( "/storage/self/primary/depenses.xls", new ExcelToSQLite.ImportListener() {
-                    @Override
-                    public void onStart() {
-                        Log.d(TAG, "start");
-                    }
-
-                    @Override
-                    public void onCompleted(String dbName) {
-                        Log.d(TAG, "done");
-
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        Log.d(TAG, "error");
-                        e.getMessage();
-
-                    }
-                });
-                return  true;
-
             default:
                 return super.onOptionsItemSelected(item);
 
         }
 
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        String path = null;
+        switch (requestCode) {
+            case FILE_SELECT_CODE:
+                if (resultCode == RESULT_OK) {
+                    // Get the Uri of the selected file
+                    Uri uri = data.getData();
+                    Log.d(TAG, "File Uri: " + uri.toString());
+                    Log.d(TAG, "File Uri: " +  uri);
+                    // Get the path
+
+                    path = uri.getPath();
+                    Log.d(TAG, "File Path: " + path);
+                    final String[] split = path.split(":");//split the path.
+                    Log.d(TAG, "split: " + split);
+                    String filePath = split[1];//assign it to a string(your choice).
+                    Log.d(TAG, "filePath: " + filePath);
+                    Log.d(TAG, "path: " + Environment.getExternalStorageDirectory().getPath()+"/"+filePath);
+
+
+                    // Get the file instance
+                    // File file = new File(path);
+                    // Initiate the upload
+                    ExcelToSQLite excelToSQLite = new ExcelToSQLite(getApplicationContext(), "fr.isima.technomobile.db", false);
+                    // Import EXCEL FILE to SQLite
+                    excelToSQLite.importFromFile(Environment.getExternalStorageDirectory().getPath()+"/"+ filePath, new ExcelToSQLite.ImportListener() {
+                        @Override
+                        public void onStart() {
+                            Log.d(TAG, "start");
+                        }
+
+                        @Override
+                        public void onCompleted(String dbName) {
+                            Log.d(TAG, "done");
+                            Toast.makeText(getApplicationContext(),"Le fichier a été importé",Toast.LENGTH_SHORT).show();
+
+
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.d(TAG, "error");
+                            e.getMessage();
+
+                        }
+                    });
+
+                }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
 
     public void updateDépensesList() {
 
@@ -245,15 +289,13 @@ public class DepensesActivity extends AppCompatActivity {
                 .setPositiveButton("Ajouter", new DialogInterface.OnClickListener () {
                     @ Override
                     public void onClick ( DialogInterface dialog , int which ) {
-                       // Log.d("staart","ok");
+
                         String title = String.valueOf(editText.getText());
                         SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
                         String date = dateformat.format(new Date( (datePicker.getYear())-1900 , datePicker.getMonth(),datePicker.getDayOfMonth()));
-                        Log.d("date", date);
                         DepensesDBHelper dépensesDBHelper = new DepensesDBHelper(DepensesActivity.this.getApplicationContext());
                         dépensesDBHelper.addDépenses(title,date, selectedGroup.getId());
                         updateDépensesList();
-                       // Log.d("end","done");
 
                     }
                 })

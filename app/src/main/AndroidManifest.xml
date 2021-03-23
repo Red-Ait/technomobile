@@ -14,7 +14,7 @@
         android:theme="@style/Theme.TechnoMobile">
         <activity android:name=".activities.DetailDepenseActivity"
             android:label="@string/title_activity_depenses"
-        é     android:theme="@style/Theme.TechnoMobile.NoActionBar" />
+           android:theme="@style/Theme.TechnoMobile.NoActionBar" />
         <activity
             android:name=".activities.DepensesActivity"
             android:label="@string/title_activity_depenses"
