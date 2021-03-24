@@ -12,9 +12,4 @@
         android:orderInCategory="100"
         android:title="Import"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/delete"
-        android:orderInCategory="100"
-        android:title="Delete"
-        app:showAsAction="never" />
 </menu>
